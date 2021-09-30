@@ -121,14 +121,13 @@ def insertion_sort():
             data[j + 1] = data[j]
             j = j - 1
             color[i] = "yellow"
-            color[j] = "green"
-            color[j + 1] = "green"
+            color[j] = "cyan"
+            color[j + 1] = "cyan"
             drawData()
             time.sleep(0.6)
-        color = ["#116562"] * len(data)
         data[j + 1] = key
         color[i] = "green"
-        color[j + 1] = "yellow"
+        color[j + 1] = "green"
         drawData()
         time.sleep(0.6)
     return
