@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from mpl_toolkits.axisartist.axislines import Subplot
 import numpy as np
+import math
+import random
 
 BG_GRAY = "#ABB2B9"
 BG_COLOR = "#17202A"
@@ -39,8 +41,8 @@ class GUI:
         Local_label = Label(bottom_label, text = 'Count of Locals', font = FONT_BOLD, width = 450, bg = BG_COLOR)
         Local_label.place(relx = 0.07, rely = 0.025, relheight = 0.03, relwidth = 0.12)
 
-        Count = Text(bottom_label, width = 150)
-        Count.place(relx = 0.20, rely = 0.027, relheight = 0.02, relwidth = 0.1)
+        self.Count = Text(bottom_label, width = 150)
+        self.Count.place(relx = 0.20, rely = 0.027, relheight = 0.02, relwidth = 0.1)
 
         send_button = Button(bottom_label, text = "Generate Graph", font = FONT_BOLD, width = 20, bg = BG_GRAY, command = self.generate_graph)
         send_button.place(relx = 0.47, rely = 0.025, relheight = 0.03, relwidth = 0.15)
@@ -52,15 +54,20 @@ class GUI:
         line.place(relwidth = 1, rely = 0.07, relheight = 0.012)
 
     def start_algo(self):
-        pass
+        local_count = int(self.Count.get("1.0",'end-1c'))
+        if local_count < 1 or local_count > 5:
+            local_count = 5
 
     def generate_graph(self):
-        np.random.seed(19680801)
-        x1 = [2, 4, 6, 8]
-        y1 = [3, 5, 7, 9]
-        self.ax.plot(x1, y1, color ='tab:blue')
+        plt.cla()
+        x = np.arange(0, 10, 0.1)
+        y = []
+        sigma = 200
+        for val in x:
+            y.append(random.gauss(x, sigma))
+        y = np.array(y)
+        self.ax.plot(x, y, color ='tab:blue')
         plt.draw()
-        pass
 
 if __name__ == "__main__":
     app = GUI()
