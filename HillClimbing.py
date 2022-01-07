@@ -5,6 +5,9 @@ from mpl_toolkits.axisartist.axislines import Subplot
 import numpy as np
 import math
 import random
+import time
+
+plt.ion()
 
 BG_GRAY = "#ABB2B9"
 BG_COLOR = "#17202A"
@@ -26,11 +29,17 @@ class GUI:
         self.window.resizable(width = False, height = False)
         self.window.configure(width = 1200, height = 700, bg = BG_COLOR)
 
+        self.x = np.arange(0, 10, 0.1)
+        self.y = np.sin(self.x) + np.random.normal(scale=0.1, size=len(self.x))
+        self.y = np.array(self.y)
+        self.xpoints = 0
+        self.ypoints = 0
+        self.point_color = 'bo'
+
         self.fig = plt.figure(figsize =(4, 4))
         self.ax = Subplot(self.fig, 111)
+        self.hill, = self.ax.plot(self.x, self.y, 'black')
         self.fig.add_subplot(self.ax)
-        self.ax.axis["top"].set_visible(False)
-        self.ax.axis["right"].set_visible(False)
 
         self.graph_widget = FigureCanvasTkAgg(self.fig, self.window)
         self.graph_widget.get_tk_widget().place(relheight = 0.745, relwidth = 1, rely = 0.08)
@@ -54,19 +63,46 @@ class GUI:
         line.place(relwidth = 1, rely = 0.07, relheight = 0.012)
 
     def start_algo(self):
-        local_count = int(self.Count.get("1.0",'end-1c'))
+        if len(self.x) == 0:
+            self.generate_graph()
+        count = self.Count.get("1.0",'end-1c')
+        local_count = 5
+        if count.isdigit():
+            local_count = int(count)
         if local_count < 1 or local_count > 5:
             local_count = 5
+        current = random.randint(1, len(self.y) - 1)
+        print("mid" + str(current))
+        plt.cla()
+        self.ax.plot(self.x, self.y, 'black')
+        plt.draw()
+        while (0 < current < len(self.y) - 1) and (self.y[current - 1] < self.y[current] or self.y[current + 1] < self.y[current]):
+            print("Loop1")
+            self.point_color = 'bo'
+            self.xpoints, self.ypoints = current, current
+            self.ax.plot(self.x[self.xpoints], self.y[self.ypoints], self.point_color)
+            plt.draw()
+            #time.sleep(5)
+            plt.pause(0.0001)
+            if self.y[current - 1] < self.y[current + 1] and self.y[current - 1] < self.y[current]:
+                current -= 1
+            elif self.y[current - 1] > self.y[current + 1] and self.y[current] > self.y[current + 1]:
+                current += 1
+            else:
+                break
+        self.xpoints, self.ypoints = current, current
+        self.point_color = 'gs'
+        self.ax.plot(self.x[self.xpoints], self.y[self.ypoints], self.point_color)
+        self.ax.plot(self.x, self.y, 'black')
+        plt.draw()
+        print(self.y[current - 1], self.y[current], self.y[current + 1])
+        print("Done")
 
     def generate_graph(self):
         plt.cla()
-        x = np.arange(0, 10, 0.1)
-        y = []
-        sigma = 200
-        for val in x:
-            y.append(random.gauss(x, sigma))
-        y = np.array(y)
-        self.ax.plot(x, y, color ='tab:blue')
+        self.x = np.arange(0, 10, 0.1)
+        self.y = np.array(np.sin(self.x) + np.random.normal(scale=0.1, size=len(self.x)))
+        self.hill, = self.ax.plot(self.x, self.y, 'black')
         plt.draw()
 
 if __name__ == "__main__":
